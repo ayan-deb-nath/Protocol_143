@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Surprise</title>
+    <style>
+        body {
+            background-color: pink;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            flex-direction: column;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+        .hidden {
+            display: none;
+        }
+        .message {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        .icons {
+            font-size: 30px;
+            margin-top: 10px;
+        }
+        .love-meter {
+            width: 200px;
+            height: 20px;
+            background: lightgray;
+            border-radius: 10px;
+            margin-top: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        .meter-fill {
+            height: 100%;
+            width: 0%;
+            background: red;
+            border-radius: 10px;
+            transition: width 0.2s;
+        }
+        .hold-button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .emoji {
+            position: absolute;
+            font-size: 30px;
+            animation: pop 1s ease-out forwards;
+        }
+        @keyframes pop {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(1.5);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card" id="valentineCard">
+        <h2>Hello Beautiful,</h2>
+        <p>Please click to open 💌</p>
+    </div>
+    
+    <div class="card hidden" id="messageCard">
+        <p class="message" id="textMessage">Hey you💖</p>
+        <div class="icons">🌹💕✨</div>
+        <div class="love-meter hidden" id="loveMeter">
+            <div class="meter-fill" id="meterFill"></div>
+        </div>
+        <button class="hold-button hidden" id="holdButton">Hold to Fill ❤️</button>
+        <p class="message hidden" id="finalMessage">Will you be my Valentine?❤️</p>
+    </div>
+
+    <script>
+        const messages = [
+            "I know this might not be the best way to say this but💡❤️",
+            "I really like you a lot 😍",
+            "And its really hard for me to wait 20 Fucking days to keep it to me.💓",
+            "But its worth it in the end because its you.☀️💛",
+            "I wish you were here so that i can tell you this while looking into your eyes⏳💕",
+            "But, here it goes...",
+            "Happy Valentine's Day!❤️"
+        ];
+        
+        const emojis = ["🌹", "💖", "✨", "😍", "💓", "💐", "🥰", "💕", "💌"];
+        let index = 0;
+        let meterProgress = 0;
+        let meterInterval;
+        
+        document.getElementById('valentineCard').addEventListener('click', function() {
+            this.classList.add('hidden');
+            document.getElementById('messageCard').classList.remove('hidden');
+            document.getElementById('loveMeter').classList.remove('hidden');
+            document.getElementById('holdButton').classList.remove('hidden');
+        });
+        
+        document.getElementById('holdButton').addEventListener('mousedown', function() {
+            meterInterval = setInterval(() => {
+                if (meterProgress < 100) {
+                    meterProgress += 10;
+                    document.getElementById('meterFill').style.width = meterProgress + '%';
+                } else {
+                    clearInterval(meterInterval);
+                    showNextMessage();
+                }
+
+                // Random emoji pop-up
+                showRandomEmoji();
+            }, 100);
+        });
+        
+        document.getElementById('holdButton').addEventListener('mouseup', function() {
+            clearInterval(meterInterval);
+            meterProgress = 0;
+            document.getElementById('meterFill').style.width = '0%';
+        });
+        
+        function showRandomEmoji() {
+            const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+            const emojiDiv = document.createElement('div');
+            emojiDiv.classList.add('emoji');
+            emojiDiv.innerText = emoji;
+
+            // Set random position
+            emojiDiv.style.left = Math.random() * 100 + '%';
+            emojiDiv.style.top = Math.random() * 100 + '%';
+
+            document.body.appendChild(emojiDiv);
+
+            // Remove emoji after animation
+            setTimeout(() => {
+                emojiDiv.remove();
+            }, 1000); // Matches the animation duration
+        }
+
+        function showNextMessage() {
+            if (index < messages.length) {
+                document.getElementById('textMessage').innerText = messages[index];
+                index++;
+                meterProgress = 0;
+                document.getElementById('meterFill').style.width = '0%';
+                if (index === messages.length) {
+                    document.getElementById('finalMessage').classList.remove('hidden');
+                    document.getElementById('loveMeter').classList.add('hidden');
+                    document.getElementById('holdButton').classList.add('hidden');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
