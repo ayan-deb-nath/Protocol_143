@@ -13,6 +13,7 @@
             height: 100vh;
             font-family: Arial, sans-serif;
             flex-direction: column;
+            overflow: hidden;
         }
         .card {
             background: white;
@@ -77,6 +78,68 @@
                 opacity: 0;
             }
         }
+        .buttons {
+            margin-top: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .yes-btn {
+            background: green;
+            color: white;
+        }
+        .no-btn {
+            background: red;
+            color: white;
+            position: absolute;
+        }
+        /* Fireworks */
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: red;
+            border-radius: 50%;
+            animation: fireworks 1s ease-out forwards;
+        }
+        @keyframes fireworks {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--x), var(--y)) scale(2);
+            }
+        }
+        .firework-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        .wholesome-text {
+            font-size: 24px;
+            color: green;
+            text-align: center;
+            margin-top: 20px;
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body>
@@ -93,7 +156,14 @@
         </div>
         <button class="hold-button hidden" id="holdButton">Hold to Fill ❤️</button>
         <p class="message hidden" id="finalMessage">Will you be my Valentine?❤️</p>
+        <div class="buttons hidden" id="buttons">
+            <button class="btn yes-btn" id="yesButton">Yes ❤️</button>
+            <button class="btn no-btn" id="noButton">No 💔</button>
+        </div>
     </div>
+
+    <!-- Firework container -->
+    <div class="firework-container" id="fireworkContainer"></div>
 
     <script>
         const messages = [
@@ -127,35 +197,12 @@
                     clearInterval(meterInterval);
                     showNextMessage();
                 }
-
-                // Random emoji pop-up
-                showRandomEmoji();
             }, 100);
         });
         
         document.getElementById('holdButton').addEventListener('mouseup', function() {
             clearInterval(meterInterval);
-            meterProgress = 0;
-            document.getElementById('meterFill').style.width = '0%';
         });
-        
-        function showRandomEmoji() {
-            const emoji = emojis[Math.floor(Math.random() * emojis.length)];
-            const emojiDiv = document.createElement('div');
-            emojiDiv.classList.add('emoji');
-            emojiDiv.innerText = emoji;
-
-            // Set random position
-            emojiDiv.style.left = Math.random() * 100 + '%';
-            emojiDiv.style.top = Math.random() * 100 + '%';
-
-            document.body.appendChild(emojiDiv);
-
-            // Remove emoji after animation
-            setTimeout(() => {
-                emojiDiv.remove();
-            }, 1000); // Matches the animation duration
-        }
 
         function showNextMessage() {
             if (index < messages.length) {
@@ -163,12 +210,48 @@
                 index++;
                 meterProgress = 0;
                 document.getElementById('meterFill').style.width = '0%';
-                if (index === messages.length) {
-                    document.getElementById('finalMessage').classList.remove('hidden');
-                    document.getElementById('loveMeter').classList.add('hidden');
-                    document.getElementById('holdButton').classList.add('hidden');
-                }
             }
+            if (index === messages.length) {
+                document.getElementById('finalMessage').classList.remove('hidden');
+                document.getElementById('loveMeter').classList.add('hidden');
+                document.getElementById('holdButton').classList.add('hidden');
+                document.getElementById('buttons').classList.remove('hidden');
+            }
+        }
+
+        document.getElementById('noButton').addEventListener('mousemove', function() {
+            this.style.top = Math.random() * window.innerHeight + 'px';
+            this.style.left = Math.random() * window.innerWidth + 'px';
+        });
+
+        // Add fireworks and wholesome text when Yes is clicked
+        document.getElementById('yesButton').addEventListener('click', function() {
+        createFireworks();
+        showWholesomeText();
+        document.getElementById('noButton').classList.add('hidden'); // Hide the No button
+    });
+    
+
+        function createFireworks() {
+            for (let i = 0; i < 10; i++) {
+                const firework = document.createElement('div');
+                firework.classList.add('firework');
+                firework.style.left = Math.random() * window.innerWidth + 'px';
+                firework.style.top = Math.random() * window.innerHeight + 'px';
+                firework.style.setProperty('--x', (Math.random() * 500 - 250) + 'px');
+                firework.style.setProperty('--y', (Math.random() * 500 - 250) + 'px');
+                document.getElementById('fireworkContainer').appendChild(firework);
+                setTimeout(() => {
+                    firework.remove();
+                }, 1000);
+            }
+        }
+
+        function showWholesomeText() {
+            const wholesomeText = document.createElement('div');
+            wholesomeText.classList.add('wholesome-text');
+            wholesomeText.innerText = "💑🌸💖❤️";
+            document.body.appendChild(wholesomeText);
         }
     </script>
 </body>
